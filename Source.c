@@ -1,6 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include<stdio.h>
-void read_from_file();
 struct ship {
 	int lenght;
 	int x;
@@ -58,7 +57,114 @@ void print_table(int table[10][10]) {
 	}
 	printf("\n");
 }
+////////////////////////////////////////////////////
+int* read_from_file(struct ship *ships) {
+	int* table = malloc(sizeof(int) * 100);
+	for (int i = 0; i < 10; i++) {
+		for (int j = 0; j < 10; j++) {
+			table[i + j * 10] = 0;
+		}
+	}
+	printf("Enter the location of your file.\n");
+	char* location = calloc(100, sizeof(char));
+	scanf("%s", location);
+	FILE* input = fopen(location, "r");
+	if (!input)return 0;
+	char  direction = 0, line[9];
+	char column = 0;
+	int length, ship_count_2 = 0, ship_count_3 = 0, ship_count_4 = 0, ship_count_6 = 0,row;
+	while (ship_count_2 + ship_count_3 + ship_count_4 + ship_count_6<10)
+	{
+		if (!fgets(line, 9, input))
+			return 0;
+		else
+		{
+			sscanf(line, "%d %c %c %d", &length, &direction, &column, &row);
+			if (length != 2 && length != 3 && length != 4 && length != 6)
+			{
+				printf("The length of ship %d is unavalable!\n", ship_count_2 + ship_count_3 + ship_count_4 + ship_count_6 + 1);
+			}
+			if (length == 2) {
+				if (ship_count_2 + 1 > 4) {
+					printf("The length of ship %d is unavalable!\n", ship_count_2 + ship_count_3 + ship_count_4 + ship_count_6 + 1);
+					return 0;
+				}
+			}
+			if (length == 3) {
+				if (ship_count_3 + 1 > 3) {
+					printf("The length of ship %d is unavalable!\n", ship_count_2 + ship_count_3 + ship_count_4 + ship_count_6 + 1);
+					return 0;
+				}
+			}
+			if (length == 4) {
+				if (ship_count_4 + 1 > 2) {
+					printf("The length of ship %d is unavalable!\n", ship_count_2 + ship_count_3 + ship_count_4 + ship_count_6 + 1);
+					return 0;
+				}
+			}
+			if (length == 6) {
+				if (ship_count_6 + 1 > 1) {
+					printf("The length of ship %d is unavalable!\n", ship_count_2 + ship_count_3 + ship_count_4 + ship_count_6 + 1);
+					return 0;
+				}
+			}
+			if (direction!= 'u' && direction != 'd' && direction != 'l' && direction != 'r') {
+				printf("The direction of ship %d is unavalable!\n", ship_count_2 + ship_count_3 + ship_count_4 + ship_count_6 + 1);
+				return 0;
+			}
+			if (!(column >= 'a' && column <= 'j'))printf("The column of ship %d is unavalable!\n", ship_count_2 + ship_count_3 + ship_count_4 + ship_count_6 + 1);
+			if (!(row >= 1 && row <= 10))printf("The row of ship %d is unavalable!\n", ship_count_2 + ship_count_3 + ship_count_4 + ship_count_6 + 1);
+			if (direction == 'u' && row - length < 0) {
+				printf("Ship %d is outside the table!\n", ship_count_2 + ship_count_3 + ship_count_4 + ship_count_6 + 1);
+				return 0;
+			}
+			if (direction == 'd' && row + length > 11) {
+				printf("Ship %d is outside the table!\n", ship_count_2 + ship_count_3 + ship_count_4 + ship_count_6 + 1);
+				return 0;
+			}
+			if (direction == 'l' && column - 'a' - length < 0) {
+				printf("Ship %d is outside the table!\n", ship_count_2 + ship_count_3 + ship_count_4 + ship_count_6 + 1);
+				return 0;
+			}
+			if (direction == 'r' && column - 'a' + length > 11) {
+				printf("Ship %d is outside the table!\n", ship_count_2 + ship_count_3 + ship_count_4 + ship_count_6 + 1);
+				return 0;
+			}
+			int copy[144] = { 0 };
+			for (int i = 1; i < 11; i++) {
+				for (int j = 1; j < 11; j++) {
+					copy[i + j * 12] = table[i - 1 + (j - 1) * 10];
+				}
+			}
+			int x, y, direction_int;
+			if (direction == 'u')x = column - 'a', y = row - length, direction_int = 0;
+			if (direction == 'd')x = column - 'a', y = row - 1, direction_int = 0;
+			if (direction == 'l')x = column - 'a' - length + 1, y = row - 1, direction_int = 1;
+			if (direction == 'r')x = column - 'a', y = row - 1, direction_int = 1;
+			if (!toching_sides(copy, x + 1, y + 1, length, direction_int)) {
+				printf("Ship %d can't be on this position.\n", ship_count_2 + ship_count_3 + ship_count_4 + ship_count_6 + 1);
+				return 0;
+			}
+			if (length == 2) ship_count_2++;
+			if (length == 3) ship_count_3++;
+			if (length == 4) ship_count_4++;
+			if (length == 6) ship_count_6++;
 
+			for (int i = x; i < length * direction_int + 1 * !direction_int + x; i++) {
+				for (int j = y; j < length * !direction_int + 1 * direction_int + y; j++) {
+					table[i + j * 10] = 1;
+				}
+			}
+			ships[ship_count_2 + ship_count_3 + ship_count_4 + ship_count_6 - 1].direction = direction_int;
+			ships[ship_count_2 + ship_count_3 + ship_count_4 + ship_count_6 - 1].x = x;
+			ships[ship_count_2 + ship_count_3 + ship_count_4 + ship_count_6 - 1].y = y;
+			ships[ship_count_2 + ship_count_3 + ship_count_4 + ship_count_6 - 1].length = length;
+			ships[ship_count_2 + ship_count_3 + ship_count_4 + ship_count_6 - 1].sinked = 0;
+		}
+	}	
+	return table;
+}
+////////////////////////////////////
 int* read_from_console(struct ship *ships) 
 {
 	int* table = malloc(sizeof(int) * 100);
