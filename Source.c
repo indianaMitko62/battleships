@@ -379,8 +379,8 @@ int main() {
 		} while (!(y - '0' >= 1 && y - '0' <= 10));
 
 		int res = play_turn(table2, x - 'a', y - '1', ships2);
-		if (res == 0)printf("Miss\n"),table[(x-'a')+(y-'1')*10]=-1;
-		if (res == 1)printf("Hit\n"),table[(x-'a')+(y-'1')*10]=2;
+		if (res == 0)printf("Miss\n");
+		if (res == 1)printf("Hit\n");
 		if (res == 2)printf("Sinked\n"),sinked2--;
 		do {
 			printf("Enter column for attack.\n");
