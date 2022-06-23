@@ -236,7 +236,7 @@ int* read_from_console(struct ship *ships)
 	return table;
 }
 int play_turn(int table[10][10], int x, int y, struct ship *ships) {
-	if (table[x][y]) {
+	if (table[y][x]) {
 		for (int i = 0; i < 10; i++) {
 			if (x >= ships[i].x && x <= ships[i].x + ships[i].lenght * ships[i].direction  && y >= ships[i].y && y <= ships[i].y + ships[i].lenght * !ships[i].direction) {
 				ships[i].sinked++;
