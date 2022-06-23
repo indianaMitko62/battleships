@@ -61,10 +61,10 @@ void print_table(int table[10][10]) {
 
 int** read_from_console(struct ship *ships) 
 {
-	int** table = malloc(sizeof(int) * 100);
+	int* table = malloc(sizeof(int) * 100);
 	for (int i = 0; i < 10; i++) {
 		for (int j = 0; j < 10; j++) {
-			table[i][j] = 0;
+			table[i+j*10] = 0;
 		}
 	}
 	int lenght, ship_count_2 = 0, ship_count_3 = 0, ship_count_4 = 0, ship_count_6 = 0, row;
@@ -147,10 +147,10 @@ int** read_from_console(struct ship *ships)
 			printf("This ship is outside the table!\n");
 			goto new_direction;
 		}
-		int copy[12][12] = { 0 };
+		int copy[144] = { 0 };
 		for (int i = 1; i < 11; i++) {
 			for (int j = 1; j < 11; j++) {
-				copy[i][j] = table[i-1][j-1];
+				copy[i+j*12] = table[i-1 + (j-1)*10];
 			}
 		}
 		int x, y, direction_int;
@@ -168,7 +168,7 @@ int** read_from_console(struct ship *ships)
 		if (lenght == 6) ship_count_6++;
 		for (int i = x; i < lenght * direction_int + 1 * !direction_int + x; i++) {
 			for (int j = y; j < lenght * !direction_int + 1 * direction_int + y; j++) {
-				table[j][i] = 1;
+				table[i+j*10] = 1;
 			}
 		}
 		ships[ship_count_2 + ship_count_3 + ship_count_4 + ship_count_6].direction = direction_int;
@@ -198,7 +198,7 @@ int** read_from_console(struct ship *ships)
 			if (ships[index].lenght == 6)ship_count_6--;
 			for (int i = x; i < ships[index].lenght * ships[index].direction + 1 * !ships[index].direction+x; i++) {
 				for (int j = y; j < ships[index].lenght * !ships[index].direction + 1 * ships[index].direction+y; j++) {
-					table[j][i] = 0;
+					table[i+j*10] = 0;
 				}
 			}
 			goto new_lenght;
@@ -220,7 +220,7 @@ int play_turn(int table[10][10], int x, int y, struct ship *ships) {
 	return 0;
 }
 int main() {
-	int **table1,**table2;
+	int *table1,*table2;
 	struct ship *ships1 = malloc(sizeof(struct ship) * 10);
 	struct ship *ships2 = malloc(sizeof(struct ship) * 10);
 	int sinked1 = 10, sinked2 = 10;
